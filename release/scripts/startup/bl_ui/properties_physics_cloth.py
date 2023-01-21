@@ -84,6 +84,7 @@ class PHYSICS_PT_cloth_physical_properties(PhysicButtonsPanel, Panel):
 class PHYSICS_PT_cloth_stiffness(PhysicButtonsPanel, Panel):
     bl_label = "Stiffness"
     bl_parent_id = 'PHYSICS_PT_cloth_physical_properties'
+    bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_EEVEE_NEXT', 'BLENDER_WORKBENCH'}
 
     def draw(self, context):
@@ -115,6 +116,7 @@ class PHYSICS_PT_cloth_stiffness(PhysicButtonsPanel, Panel):
 class PHYSICS_PT_cloth_damping(PhysicButtonsPanel, Panel):
     bl_label = "Damping"
     bl_parent_id = 'PHYSICS_PT_cloth_physical_properties'
+    bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_EEVEE_NEXT', 'BLENDER_WORKBENCH'}
 
     def draw(self, context):
@@ -146,6 +148,7 @@ class PHYSICS_PT_cloth_damping(PhysicButtonsPanel, Panel):
 class PHYSICS_PT_cloth_internal_springs(PhysicButtonsPanel, Panel):
     bl_label = "Internal Springs"
     bl_parent_id = 'PHYSICS_PT_cloth_physical_properties'
+    bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_EEVEE_NEXT', 'BLENDER_WORKBENCH'}
 
     def draw_header(self, context):
@@ -171,7 +174,9 @@ class PHYSICS_PT_cloth_internal_springs(PhysicButtonsPanel, Panel):
         col = flow.column()
         col.prop(cloth, "internal_spring_max_diversion", text="Max Creation Diversion")
         col = flow.column()
+        col.use_property_split = False
         col.prop(cloth, "internal_spring_normal_check", text="Check Surface Normals")
+        col.use_property_split = True
         col = flow.column()
         col.prop(cloth, "internal_tension_stiffness", text="Tension")
         col = flow.column()
@@ -188,6 +193,7 @@ class PHYSICS_PT_cloth_internal_springs(PhysicButtonsPanel, Panel):
 class PHYSICS_PT_cloth_pressure(PhysicButtonsPanel, Panel):
     bl_label = "Pressure"
     bl_parent_id = 'PHYSICS_PT_cloth_physical_properties'
+    bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_EEVEE_NEXT', 'BLENDER_WORKBENCH'}
 
     def draw_header(self, context):
@@ -212,7 +218,9 @@ class PHYSICS_PT_cloth_pressure(PhysicButtonsPanel, Panel):
         col.prop(cloth, "uniform_pressure_force")
 
         col = flow.column()
+        col.use_property_split = False
         col.prop(cloth, "use_pressure_volume", text="Custom Volume")
+        col.use_property_split = True
 
         col = flow.column()
         col.active = cloth.use_pressure_volume
@@ -266,20 +274,26 @@ class PHYSICS_PT_cloth_shape(PhysicButtonsPanel, Panel):
 
         col.separator()
 
-        col = flow.column(align=True)
+        col = flow.column()
+
+        split = flow.split(factor = 0.36)
+        col = split.column()
+        col.use_property_split = False
         col.prop(cloth, "use_sewing_springs", text="Sewing")
-
-        sub = col.column(align=True)
-        sub.active = cloth.use_sewing_springs
-        sub.prop(cloth, "sewing_force_max", text="Max Sewing Force")
-
-        col.separator()
+        col = split.column()
+        if cloth.use_sewing_springs:
+            col.prop(cloth, "sewing_force_max", text="")
+        else:
+            col.label(icon='DISCLOSURE_TRI_RIGHT')
 
         col = flow.column()
         col.prop(cloth, "shrink_min", text="Shrinking Factor")
 
         col = flow.column()
-        col.prop(cloth, "use_dynamic_mesh", text="Dynamic Mesh")
+        row = col.row()
+        row.use_property_split = False
+        row.prop(cloth, "use_dynamic_mesh", text="Dynamic Mesh")
+        row.prop_decorator(cloth, "use_dynamic_mesh")
 
         key = ob.data.shape_keys
 

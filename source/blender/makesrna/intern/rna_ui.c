@@ -284,18 +284,20 @@ static StructRNA *rna_Panel_register(Main *bmain,
 #  endif
     }
   }
-  else {
-    if (dummypt.category[0] != '\0') {
-      if ((1 << dummypt.space_type) & WM_TOOLSYSTEM_SPACE_MASK) {
-        BKE_reportf(reports,
-                    RPT_ERROR,
-                    "Registering panel class: '%s' has category '%s' ",
-                    dummypt.idname,
-                    dummypt.category);
-        return NULL;
-      }
-    }
-  }
+  /* bfa - readd tabs to tools area */
+  /* this else statement purpose is to error out when adding tabs to toolshelf */
+  // else {
+  //   if (dummypt.category[0] != '\0') {
+  //     if ((1 << dummypt.space_type) & WM_TOOLSYSTEM_SPACE_MASK) {
+  //       BKE_reportf(reports,
+  //                   RPT_ERROR,
+  //                   "Registering panel class: '%s' has category '%s' ",
+  //                   dummypt.idname,
+  //                   dummypt.category);
+  //       return NULL;
+  //     }
+  //   }
+  // }
 
   if (!(art = region_type_find(reports, dummypt.space_type, dummypt.region_type))) {
     return NULL;
@@ -1366,6 +1368,8 @@ static void rna_def_panel(BlenderRNA *brna)
        0,
        "Expand Header Layout",
        "Allow buttons in the header to stretch and shrink to fill the entire layout width"},
+      /* bfa - transparent toolsystem panels bg */
+      {PANEL_HIDE_BG, "HIDE_BG", 0, "Make panel background fully transparent"},
       {0, NULL, 0, NULL, NULL},
   };
 

@@ -1,6 +1,6 @@
 @echo off
 REM This batch file does an out-of-source CMake build in ../build_windows
-REM This is for users who like to configure & build Blender with a single command.
+REM This is for users who like to configure & build Bforartists with a single command.
 setlocal EnableDelayedExpansion
 setlocal ENABLEEXTENSIONS
 set BLENDER_DIR=%~dp0
@@ -103,7 +103,7 @@ if "%CMAKE%" == "" (
 	exit /b 1
 )
 
-echo Building blender with VS%BUILD_VS_YEAR% for %BUILD_ARCH% in %BUILD_DIR%
+echo Building bforartists with VS%BUILD_VS_YEAR% for %BUILD_ARCH% in %BUILD_DIR%
 
 call "%BLENDER_DIR%\build_files\windows\check_libraries.cmd"
 if errorlevel 1 goto EOF
@@ -113,8 +113,9 @@ if "%TEST%" == "1" (
 	goto EOF
 )
 
-call "%BLENDER_DIR%\build_files\windows\check_submodules.cmd"
-if errorlevel 1 goto EOF
+REM bfa - no sub modules -
+REM call "%BLENDER_DIR%\build_files\windows\check_submodules.cmd"
+REM if errorlevel 1 goto EOF
 
 if "%BUILD_WITH_NINJA%" == "" (
 	call "%BLENDER_DIR%\build_files\windows\configure_msbuild.cmd"

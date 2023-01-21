@@ -48,6 +48,8 @@
 
 #include "action_intern.h"
 
+#include "BLI_string.h" /*bfa - needed for BLI_strdup */
+
 /* ************************************************************************** */
 /* KEYFRAMES STUFF */
 
@@ -328,6 +330,26 @@ static int actkeys_deselectall_exec(bContext *C, wmOperator *op)
   return OPERATOR_FINISHED;
 }
 
+/*bfa - descriptions*/
+static char *action_ot_select_all_get_description(bContext *UNUSED(C),
+                                                  wmOperatorType *UNUSED(ot),
+                                                  PointerRNA *ptr)
+{
+  /*Select*/
+  if (RNA_enum_get(ptr, "action") == SEL_SELECT) {
+    return BLI_strdup("Toggle selection of all keyframes");
+  }
+  /*Deselect*/
+  else if (RNA_enum_get(ptr, "action") == SEL_DESELECT) {
+    return BLI_strdup("Deselect all keyframes");
+  }
+  /*Invert*/
+  else if (RNA_enum_get(ptr, "action") == SEL_INVERT) {
+    return BLI_strdup("Invert selection of the selected keyframes");
+  }
+  return NULL;
+}
+
 void ACTION_OT_select_all(wmOperatorType *ot)
 {
   /* identifiers */
@@ -337,6 +359,7 @@ void ACTION_OT_select_all(wmOperatorType *ot)
 
   /* api callbacks */
   ot->exec = actkeys_deselectall_exec;
+  ot->get_description = action_ot_select_all_get_description; /*bfa - descriptions*/
   ot->poll = ED_operator_action_active;
 
   /* flags */
@@ -1486,6 +1509,18 @@ static int actkeys_select_leftright_invoke(bContext *C, wmOperator *op, const wm
   return actkeys_select_leftright_exec(C, op);
 }
 
+/*bfa - descriptions*/
+static char *action_ot_select_leftright_get_description(bContext *UNUSED(C),
+                                                        wmOperatorType *UNUSED(ot),
+                                                        PointerRNA *ptr)
+{
+  if (RNA_enum_get(ptr, "mode") == ACTKEYS_LRSEL_LEFT) {
+
+    return BLI_strdup("Select keyframes to the left of the current frame");
+  }
+  return NULL;
+}
+
 void ACTION_OT_select_leftright(wmOperatorType *ot)
 {
   PropertyRNA *prop;
@@ -1493,11 +1528,12 @@ void ACTION_OT_select_leftright(wmOperatorType *ot)
   /* identifiers */
   ot->name = "Select Left/Right";
   ot->idname = "ACTION_OT_select_leftright";
-  ot->description = "Select keyframes to the left or the right of the current frame";
+  ot->description = "Select keyframes to the right of the current frame";
 
   /* api callbacks */
   ot->invoke = actkeys_select_leftright_invoke;
   ot->exec = actkeys_select_leftright_exec;
+  ot->get_description = action_ot_select_leftright_get_description; /*bfa - descriptions*/
   ot->poll = ED_operator_action_active;
 
   /* flags */

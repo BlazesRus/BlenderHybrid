@@ -1,5 +1,7 @@
 # generic files to ignore
 .*
+# Bforartists: include .github folder
+!.github
 
 # python temp paths
 __pycache__/
@@ -41,6 +43,9 @@ Desktop.ini
 # in-source lib downloads
 /build_files/build_environment/downloads
 
+#bfa - we don't have sub modules
+/.gitmodules
+
 # in-source buildbot signing configuration
 /build_files/buildbot/codesign/config_server.py
 
@@ -49,3 +54,5 @@ waveletNoiseTile.bin
 
 # testing environment
 /Testing
+/release/datafiles/blender_icons16/icon16_current_file.dat
+/release/datafiles/blender_icons32/icon32_current_file.dat

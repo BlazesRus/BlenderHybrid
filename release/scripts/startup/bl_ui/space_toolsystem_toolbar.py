@@ -32,7 +32,7 @@ def generate_from_enum_ex(
         attr,
         cursor='DEFAULT',
         tooldef_keywords={},
-        exclude_filter={},
+        exclude_filter = {}
 ):
     tool_defs = []
     for enum in type.bl_rna.properties[attr].enum_items_static:
@@ -49,8 +49,8 @@ def generate_from_enum_ex(
                     cursor=cursor,
                     data_block=idname,
                     **tooldef_keywords,
-                ),
-            ),
+                )
+            )
         )
     return tuple(tool_defs)
 
@@ -76,8 +76,11 @@ class _defs_view3d_generic:
     def cursor():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("view3d.cursor3d")
+            layout.use_property_split = False
             layout.prop(props, "use_depth")
+            layout.use_property_split = True
             layout.prop(props, "orientation")
+            layout.use_property_split = False
         return dict(
             idname="builtin.cursor",
             label="Cursor",
@@ -203,6 +206,7 @@ class _defs_annotate:
                 col.active = props.use_stabilizer
                 col.prop(props, "stabilizer_radius", text="Radius", slider=True)
                 col.prop(props, "stabilizer_factor", text="Factor", slider=True)
+
 
     @ToolDef.from_fn.with_args(draw_settings=draw_settings_common)
     def scribble(*, draw_settings):
@@ -390,6 +394,7 @@ class _defs_view3d_select:
             row = layout.row()
             row.use_property_split = False
             row.prop(props, "mode", text="", expand=True, icon_only=True)
+
         return dict(
             idname="builtin.select_box",
             label="Select Box",
@@ -406,6 +411,7 @@ class _defs_view3d_select:
             row = layout.row()
             row.use_property_split = False
             row.prop(props, "mode", text="", expand=True, icon_only=True)
+
         return dict(
             idname="builtin.select_lasso",
             label="Select Lasso",
@@ -501,14 +507,24 @@ class _defs_view3d_add:
         if extra:
             layout.use_property_split = True
             layout.row().prop(props, "plane_axis", expand=True)
+            layout.use_property_split = False
             layout.row().prop(props, "plane_axis_auto")
+            layout.use_property_split = True
 
             layout.label(text="Base")
-            layout.row().prop(props, "plane_origin_base", expand=True)
-            layout.row().prop(props, "plane_aspect_base", expand=True)
+            row = layout.row()
+            row.separator()
+            row.prop(props, "plane_origin_base", expand=True)
+            row = layout.row()
+            row.separator()
+            row.prop(props, "plane_aspect_base", expand=True)
             layout.label(text="Height")
-            layout.row().prop(props, "plane_origin_depth", expand=True)
-            layout.row().prop(props, "plane_aspect_depth", expand=True)
+            row = layout.row()
+            row.separator()
+            row.prop(props, "plane_origin_depth", expand=True)
+            row = layout.row()
+            row.separator()
+            row.prop(props, "plane_aspect_depth", expand=True)
         return show_extra
 
     @ToolDef.from_fn
@@ -569,6 +585,7 @@ class _defs_view3d_add:
 
             if show_extra:
                 layout.popover("TOPBAR_PT_tool_settings_extra", text="...")
+
         return dict(
             idname="builtin.primitive_cylinder_add",
             label="Add Cylinder",
@@ -594,6 +611,7 @@ class _defs_view3d_add:
 
             if show_extra:
                 layout.popover("TOPBAR_PT_tool_settings_extra", text="...")
+
         return dict(
             idname="builtin.primitive_uv_sphere_add",
             label="Add UV Sphere",
@@ -618,6 +636,7 @@ class _defs_view3d_add:
 
             if show_extra:
                 layout.popover("TOPBAR_PT_tool_settings_extra", text="...")
+
         return dict(
             idname="builtin.primitive_ico_sphere_add",
             label="Add Ico Sphere",
@@ -696,6 +715,7 @@ class _defs_edit_mesh:
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("mesh.rip_move")
             props_macro = props.MESH_OT_rip
+            layout.use_property_split = False
             layout.prop(props_macro, "use_fill")
 
         return dict(
@@ -722,6 +742,7 @@ class _defs_edit_mesh:
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("mesh.polybuild_face_at_cursor_move")
             props_macro = props.MESH_OT_polybuild_face_at_cursor
+            layout.use_property_split = False
             layout.prop(props_macro, "create_quads")
         return dict(
             idname="builtin.poly_build",
@@ -736,6 +757,7 @@ class _defs_edit_mesh:
     def edge_slide():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("transform.edge_slide")
+            layout.use_property_split = False
             layout.prop(props, "correct_uv")
 
         return dict(
@@ -751,6 +773,7 @@ class _defs_edit_mesh:
     def vert_slide():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("transform.vert_slide")
+            layout.use_property_split = False
             layout.prop(props, "correct_uv")
 
         return dict(
@@ -800,6 +823,7 @@ class _defs_edit_mesh:
     def inset():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("mesh.inset")
+            layout.use_property_split = False
             layout.prop(props, "use_outset")
             layout.prop(props, "use_individual")
             layout.prop(props, "use_even_offset")
@@ -853,32 +877,43 @@ class _defs_edit_mesh:
 
                 layout.prop(props, "material")
 
-                col = layout.column()
+                col = layout.column(align = True)
+                col.use_property_split = False
                 col.prop(props, "harden_normals")
                 col.prop(props, "clamp_overlap")
                 col.prop(props, "loop_slide")
 
-                col = layout.column(heading="Mark")
-                col.active = edge_bevel
-                col.prop(props, "mark_seam", text="Seam")
-                col.prop(props, "mark_sharp", text="Sharp")
+                if edge_bevel:
+                    col = layout.column(align = True)
+                    col.use_property_split = False
+                    col.label(text = "Mark")
+                    row = col.row()
+                    row.separator()
+                    row.prop(props, "mark_seam", text="Seam")
+                    row = col.row()
+                    row.separator()
+                    row.prop(props, "mark_sharp", text="Sharp")
 
-                col = layout.column()
-                col.active = edge_bevel
-                col.prop(props, "miter_outer", text="Miter Outer")
-                col.prop(props, "miter_inner", text="Inner")
+                if edge_bevel:
+                    col = layout.column()
+                    col.prop(props, "miter_outer", text="Miter Outer")
+                    col.prop(props, "miter_inner", text="Inner")
                 if props.miter_inner == 'ARC':
                     col.prop(props, "spread")
 
                 layout.separator()
 
-                col = layout.column()
-                col.active = edge_bevel
-                col.prop(props, "vmesh_method", text="Intersections")
+                if edge_bevel:
+                    col = layout.column()
+                    col.prop(props, "vmesh_method", text="Intersections")
+
+                    layout.separator()
 
                 layout.prop(props, "face_strength_mode", text="Face Strength")
 
                 layout.prop(props, "profile_type")
+
+                layout.separator()
 
                 if props.profile_type == 'CUSTOM':
                     tool_settings = context.tool_settings
@@ -928,6 +963,7 @@ class _defs_edit_mesh:
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("mesh.extrude_region_shrink_fatten")
             props_macro = props.TRANSFORM_OT_shrink_fatten
+            layout.use_property_split = False
             layout.prop(props_macro, "use_even_offset")
         return dict(
             idname="builtin.extrude_along_normals",
@@ -953,6 +989,7 @@ class _defs_edit_mesh:
     def extrude_cursor():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("mesh.dupli_extrude_cursor")
+            layout.use_property_split = False
             layout.prop(props, "rotate_source")
 
         return dict(
@@ -973,6 +1010,7 @@ class _defs_edit_mesh:
             props_macro = props.MESH_OT_loopcut
             layout.prop(props_macro, "number_cuts")
             props_macro = props.TRANSFORM_OT_edge_slide
+            layout.use_property_split = False
             layout.prop(props_macro, "correct_uv")
 
         return dict(
@@ -1038,6 +1076,7 @@ class _defs_edit_mesh:
     def shrink_fatten():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("transform.shrink_fatten")
+            layout.use_property_split = False
             layout.prop(props, "use_even_offset")
 
         return dict(
@@ -1064,7 +1103,9 @@ class _defs_edit_mesh:
         def draw_settings(_context, layout, tool, *, extra=False):
             show_extra = False
             props = tool.operator_properties("mesh.knife_tool")
+
             if not extra:
+                layout.use_property_split = False
                 layout.prop(props, "use_occlude_geometry")
                 layout.prop(props, "only_selected")
                 layout.prop(props, "xray")
@@ -1073,6 +1114,7 @@ class _defs_edit_mesh:
                     show_extra = True
                 else:
                     extra = True
+
             if extra:
                 layout.use_property_decorate = False
                 layout.use_property_split = True
@@ -1080,9 +1122,11 @@ class _defs_edit_mesh:
                 layout.prop(props, "visible_measurements")
                 layout.prop(props, "angle_snapping")
                 layout.label(text="Angle Snapping Increment")
-                layout.prop(props, "angle_snapping_increment", text="")
+                layout.row().prop(props, "angle_snapping_increment", text="", expand=True)
+
             if show_extra:
-                layout.popover("TOPBAR_PT_tool_settings_extra", text="...")
+                layout.popover("TOPBAR_PT_tool_settings_extra", text="Settings")
+
         return dict(
             idname="builtin.knife",
             label="Knife",
@@ -1098,10 +1142,16 @@ class _defs_edit_mesh:
     def bisect():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("mesh.bisect")
+            layout.use_property_split = False
             layout.prop(props, "use_fill")
             layout.prop(props, "clear_inner")
             layout.prop(props, "clear_outer")
-            layout.prop(props, "threshold")
+            split = layout.split(factor = 0.45)
+            row = split.row()
+            row.label(text = "Axis Threshold:")
+            row = split.row()
+            row.prop(props, "threshold", text = "")
+
         return dict(
             idname="builtin.bisect",
             label="Bisect",
@@ -1126,7 +1176,7 @@ class _defs_edit_curve:
                 if not extra:
                     layout.prop(cps, "curve_type", text="")
                     layout.prop(cps, "depth_mode", expand=True)
-                    layout.popover("TOPBAR_PT_tool_settings_extra", text="...")
+                    layout.popover("TOPBAR_PT_tool_settings_extra", text="Draw Settings")
                     return
 
             layout.use_property_split = True
@@ -1138,14 +1188,18 @@ class _defs_edit_curve:
             if cps.curve_type == 'BEZIER':
                 layout.prop(cps, "fit_method")
                 layout.prop(cps, "error_threshold")
-                if region_type != 'TOOL_HEADER':
-                    row = layout.row(heading="Detect Corners", align=True)
+
+                split = layout.split()
+                col = split.column()
+                col.use_property_split = False
+                col.prop(cps, "use_corners_detect")
+                col = split.column()
+                if cps.use_corners_detect:
+                    col.use_property_split = False
+                    col.prop(cps, "corner_angle", text="")
                 else:
-                    row = layout.row(heading="Corners", align=True)
-                row.prop(cps, "use_corners_detect", text="")
-                sub = row.row(align=True)
-                sub.active = cps.use_corners_detect
-                sub.prop(cps, "corner_angle", text="")
+                    col.label(icon='DISCLOSURE_TRI_RIGHT')
+
                 layout.separator()
 
             col = layout.column(align=True)
@@ -1193,17 +1247,6 @@ class _defs_edit_curve:
         )
 
     @ToolDef.from_fn
-    def extrude_cursor():
-        return dict(
-            idname="builtin.extrude_cursor",
-            label="Extrude to Cursor",
-            cursor='CROSSHAIR',
-            icon="ops.curve.extrude_cursor",
-            widget=None,
-            keymap=(),
-        )
-
-    @ToolDef.from_fn
     def pen():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("curve.pen")
@@ -1217,6 +1260,17 @@ class _defs_edit_curve:
             widget=None,
             keymap=(),
             draw_settings=draw_settings,
+        )
+
+    @ToolDef.from_fn
+    def extrude_cursor():
+        return dict(
+            idname="builtin.extrude_cursor",
+            label="Extrude to Cursor",
+            cursor='CROSSHAIR',
+            icon="ops.curve.extrude_cursor",
+            widget=None,
+            keymap=(),
         )
 
     @ToolDef.from_fn
@@ -1331,6 +1385,7 @@ class _defs_sculpt:
     def mask_border():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("paint.mask_box_gesture")
+            layout.use_property_split = False
             layout.prop(props, "use_front_faces_only", expand=False)
 
         return dict(
@@ -1346,6 +1401,7 @@ class _defs_sculpt:
     def mask_lasso():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("paint.mask_lasso_gesture")
+            layout.use_property_split = False
             layout.prop(props, "use_front_faces_only", expand=False)
 
         return dict(
@@ -1361,6 +1417,7 @@ class _defs_sculpt:
     def mask_line():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("paint.mask_line_gesture")
+            layout.use_property_split = False
             layout.prop(props, "use_front_faces_only", expand=False)
             layout.prop(props, "use_limit_to_segment", expand=False)
 
@@ -1377,6 +1434,7 @@ class _defs_sculpt:
     def face_set_box():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("sculpt.face_set_box_gesture")
+            layout.use_property_split = False
             layout.prop(props, "use_front_faces_only", expand=False)
 
         return dict(
@@ -1392,6 +1450,7 @@ class _defs_sculpt:
     def face_set_lasso():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("sculpt.face_set_lasso_gesture")
+            layout.use_property_split = False
             layout.prop(props, "use_front_faces_only", expand=False)
 
         return dict(
@@ -1407,8 +1466,9 @@ class _defs_sculpt:
     def trim_box():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("sculpt.trim_box_gesture")
-            layout.prop(props, "trim_mode", expand=False)
+            layout.prop(props, "trim_mode", expand=False)           
             layout.prop(props, "trim_extrude_mode", expand=False)
+            layout.use_property_split = False
             layout.prop(props, "use_cursor_depth", expand=False)
         return dict(
             idname="builtin.box_trim",
@@ -1426,6 +1486,7 @@ class _defs_sculpt:
             layout.prop(props, "trim_mode", expand=False)
             layout.prop(props, "trim_orientation", expand=False)
             layout.prop(props, "trim_extrude_mode", expand=False)
+            layout.use_property_split = False
             layout.prop(props, "use_cursor_depth", expand=False)
         return dict(
             idname="builtin.lasso_trim",
@@ -1440,6 +1501,7 @@ class _defs_sculpt:
     def project_line():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("sculpt.project_line_gesture")
+            layout.use_property_split = False
             layout.prop(props, "use_limit_to_segment", expand=False)
 
         return dict(
@@ -1488,6 +1550,7 @@ class _defs_sculpt:
             layout.prop(props, "orientation", expand=False)
             layout.prop(props, "cloth_mass")
             layout.prop(props, "cloth_damping")
+            layout.use_property_split = False
             layout.prop(props, "use_face_sets")
             layout.prop(props, "use_collisions")
 
@@ -1523,6 +1586,7 @@ class _defs_sculpt:
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("sculpt.mask_by_color")
             layout.prop(props, "threshold")
+            layout.use_property_split = False
             layout.prop(props, "contiguous")
             layout.prop(props, "invert")
             layout.prop(props, "preserve_previous_mask")
@@ -1541,6 +1605,7 @@ class _defs_sculpt:
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("sculpt.face_set_edit")
             layout.prop(props, "mode", expand=False)
+            layout.use_property_split = False
             layout.prop(props, "modify_hidden")
 
         return dict(
@@ -1635,7 +1700,7 @@ class _defs_weight_paint:
             cursor='EYEDROPPER',
             widget=None,
             keymap=(),
-            draw_settings=draw_settings,
+            draw_settings=draw_settings
         )
 
     @ToolDef.from_fn
@@ -1662,7 +1727,7 @@ class _defs_weight_paint:
                     "weight",
                     unified_name="use_unified_weight",
                     slider=True,
-                    header=True,
+                    header=True
                 )
                 UnifiedPaintPanel.prop_unified(
                     layout,
@@ -1670,7 +1735,7 @@ class _defs_weight_paint:
                     brush,
                     "strength",
                     unified_name="use_unified_strength",
-                    header=True,
+                    header=True
                 )
 
             props = tool.operator_properties("paint.weight_gradient")
@@ -2074,6 +2139,7 @@ class _defs_gpencil_paint:
     def interpolate():
         def draw_settings(_context, layout, tool):
             props = tool.operator_properties("gpencil.interpolate")
+
             layout.prop(props, "layers")
             layout.prop(props, "exclude_breakdowns")
             layout.prop(props, "flip")
@@ -2325,7 +2391,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.selection_paint",
             label="Selection Paint",
             icon="ops.generic.select_paint",
-            data_block="SELECTION_PAINT",
+            data_block="SELECTION_PAINT"
         )
 
     @ToolDef.from_fn
@@ -2334,7 +2400,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.comb",
             label="Comb",
             icon="ops.curves.sculpt_comb",
-            data_block='COMB',
+            data_block='COMB'
         )
 
     @ToolDef.from_fn
@@ -2343,7 +2409,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.add",
             label="Add",
             icon="ops.curves.sculpt_add",
-            data_block='ADD',
+            data_block='ADD'
         )
 
     @ToolDef.from_fn
@@ -2352,7 +2418,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.delete",
             label="Delete",
             icon="ops.curves.sculpt_delete",
-            data_block='DELETE',
+            data_block='DELETE'
         )
 
     @ToolDef.from_fn
@@ -2361,7 +2427,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.snake_hook",
             label="Snake Hook",
             icon="ops.curves.sculpt_snake_hook",
-            data_block='SNAKE_HOOK',
+            data_block='SNAKE_HOOK'
         )
 
     @ToolDef.from_fn
@@ -2370,7 +2436,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.grow_shrink",
             label="Grow/Shrink",
             icon="ops.curves.sculpt_grow_shrink",
-            data_block='GROW_SHRINK',
+            data_block='GROW_SHRINK'
         )
 
     @ToolDef.from_fn
@@ -2379,7 +2445,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.pinch",
             label="Pinch",
             icon="ops.curves.sculpt_pinch",
-            data_block='PINCH',
+            data_block='PINCH'
         )
 
     @ToolDef.from_fn
@@ -2388,7 +2454,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.smooth",
             label="Smooth",
             icon="ops.curves.sculpt_smooth",
-            data_block='SMOOTH',
+            data_block='SMOOTH'
         )
 
     @ToolDef.from_fn
@@ -2397,7 +2463,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.puff",
             label="Puff",
             icon="ops.curves.sculpt_puff",
-            data_block='PUFF',
+            data_block='PUFF'
         )
 
     @ToolDef.from_fn
@@ -2406,7 +2472,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.density",
             label="Density",
             icon="ops.curves.sculpt_density",
-            data_block="DENSITY",
+            data_block="DENSITY"
         )
 
     @ToolDef.from_fn
@@ -2415,7 +2481,7 @@ class _defs_curves_sculpt:
             idname="builtin_brush.slide",
             label="Slide",
             icon="ops.curves.sculpt_slide",
-            data_block="SLIDE",
+            data_block="SLIDE"
         )
 
 
@@ -2621,6 +2687,8 @@ class _defs_sequencer_generic:
         )
 
 
+
+
 class _defs_sequencer_select:
     @ToolDef.from_fn
     def select():
@@ -2631,7 +2699,6 @@ class _defs_sequencer_select:
             widget=None,
             keymap="Sequencer Tool: Tweak",
         )
-
     @ToolDef.from_fn
     def box():
         def draw_settings(_context, layout, tool):
@@ -2650,11 +2717,15 @@ class _defs_sequencer_select:
         )
 
 
+# ------------------------------------------------- Image editor  -------------------------------------------------------
+
 class IMAGE_PT_tools_active(ToolSelectPanelHelper, Panel):
     bl_space_type = 'IMAGE_EDITOR'
     bl_region_type = 'TOOLS'
-    bl_label = "Tools"  # not visible
-    bl_options = {'HIDE_HEADER'}
+    bl_label = "Tools"
+    bl_category = "Tools"
+    # bl_options = {'HIDE_HEADER'} bfa - we need the header.
+    bl_options = {'HIDE_BG'}
 
     # Satisfy the 'ToolSelectPanelHelper' API.
     keymap_prefix = "Image Editor Tool:"
@@ -2743,13 +2814,15 @@ class IMAGE_PT_tools_active(ToolSelectPanelHelper, Panel):
             *_tools_annotate,
         ],
     }
-
+# ------------------------------------------------- shader editor, compositor, texture node editor  -------------------------------------------------------
 
 class NODE_PT_tools_active(ToolSelectPanelHelper, Panel):
     bl_space_type = 'NODE_EDITOR'
     bl_region_type = 'TOOLS'
-    bl_label = "Tools"  # not visible
-    bl_options = {'HIDE_HEADER'}
+    bl_label = "Tools"
+    bl_category = "Tools"
+    # bl_options = {'HIDE_HEADER'} bfa - we need the header.
+    bl_options = {'HIDE_BG'}
 
     # Satisfy the 'ToolSelectPanelHelper' API.
     keymap_prefix = "Node Editor Tool:"
@@ -2781,8 +2854,8 @@ class NODE_PT_tools_active(ToolSelectPanelHelper, Panel):
         (
             _defs_node_select.select,
             _defs_node_select.box,
-            _defs_node_select.lasso,
             _defs_node_select.circle,
+            _defs_node_select.lasso,
         ),
     )
 
@@ -2796,7 +2869,7 @@ class NODE_PT_tools_active(ToolSelectPanelHelper, Panel):
     )
 
     # Private tools dictionary, store data to implement `tools_all` & `tools_from_context`.
-    # The keys is always `None` since nodes don't use use modes to access different tools.
+    # The keys match object-modes from: `context.mode`.
     # The values represent the tools, see `ToolSelectPanelHelper` for details.
     _tools = {
         None: [
@@ -2807,13 +2880,16 @@ class NODE_PT_tools_active(ToolSelectPanelHelper, Panel):
             _defs_node_edit.links_cut,
         ],
     }
+# ------------------------------------------------- 3d view -------------------------------------------------------
 
 
 class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
-    bl_label = "Tools"  # not visible
-    bl_options = {'HIDE_HEADER'}
+    bl_label = "Tools"
+    bl_category = "Tools"
+    #bl_options = {'HIDE_HEADER'} # bfa - we need the header for sorting the tabs
+    bl_options = {'HIDE_BG'}
 
     # Satisfy the 'ToolSelectPanelHelper' API.
     keymap_prefix = "3D View Tool:"
@@ -2847,7 +2923,7 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
         ),
         _defs_transform.transform,
     )
-
+    # select tools group
     _tools_select = (
         (
             _defs_view3d_select.select,
@@ -3012,6 +3088,7 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
             _defs_transform.shear,
         ],
         'EDIT_TEXT': [
+            _defs_view3d_select.select,
             _defs_view3d_generic.cursor,
             None,
             *_tools_annotate,
@@ -3023,7 +3100,7 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
             None,
             _defs_particle.generate_from_brushes,
         ],
-        'SCULPT': [
+       'SCULPT': [
             _defs_sculpt.generate_from_brushes,
             None,
             (
@@ -3045,7 +3122,7 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
             _defs_sculpt.mesh_filter,
             _defs_sculpt.cloth_filter,
             _defs_sculpt.color_filter,
-            None,
+            #None, #bfa - too big gap
             _defs_sculpt.face_set_edit,
             _defs_sculpt.mask_by_color,
             None,
@@ -3094,7 +3171,7 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
                 if context is None or context.pose_object
                 else ()
             ),
-            None,
+            #None, #bfa - too big gap
             lambda context: (
                 VIEW3D_PT_tools_active._tools_select
                 if _defs_weight_paint.poll_select_mask(context)
@@ -3189,8 +3266,9 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
 class SEQUENCER_PT_tools_active(ToolSelectPanelHelper, Panel):
     bl_space_type = 'SEQUENCE_EDITOR'
     bl_region_type = 'TOOLS'
-    bl_label = "Tools"  # not visible
-    bl_options = {'HIDE_HEADER'}
+    bl_label = "Tools"
+    bl_category = "Tools"
+    bl_options = {'HIDE_BG'}
 
     # Satisfy the 'ToolSelectPanelHelper' API.
     keymap_prefix = "Sequence Editor Tool:"
@@ -3232,7 +3310,7 @@ class SEQUENCER_PT_tools_active(ToolSelectPanelHelper, Panel):
     )
 
     # Private tools dictionary, store data to implement `tools_all` & `tools_from_context`.
-    # The keys match sequence editors view type: `context.space_data.view_type`.
+    # The keys match object-modes from: `context.mode`.
     # The values represent the tools, see `ToolSelectPanelHelper` for details.
     _tools = {
         None: [

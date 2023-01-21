@@ -79,14 +79,14 @@ const EnumPropertyItem *ED_asset_library_reference_to_rna_enum_itemf(const bool 
     const EnumPropertyItem generated_items[] = {
         {ASSET_LIBRARY_ALL,
          "ALL",
-         ICON_NONE,
+         ICON_DOCUMENTS,
          "All",
          "Show assets from all of the listed asset libraries"},
         {ASSET_LIBRARY_LOCAL,
          "LOCAL",
-         ICON_CURRENT_FILE,
+         ICON_BLENDER,
          "Current File",
-         "Show the assets currently available in this Blender session"},
+         "Show the assets currently available in this session"},
         {0, nullptr, 0, nullptr, nullptr},
     };
 
@@ -116,7 +116,7 @@ const EnumPropertyItem *ED_asset_library_reference_to_rna_enum_itemf(const bool 
     const int enum_value = ED_asset_library_reference_to_enum_value(&library_reference);
     /* Use library path as description, it's a nice hint for users. */
     EnumPropertyItem tmp = {
-        enum_value, user_library->name, ICON_NONE, user_library->name, user_library->path};
+        enum_value, user_library->name, ICON_FILE_FOLDER, user_library->name, user_library->path};
     RNA_enum_item_add(&item, &totitem, &tmp);
   }
 

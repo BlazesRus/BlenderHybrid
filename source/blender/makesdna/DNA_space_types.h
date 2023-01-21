@@ -1882,6 +1882,22 @@ typedef struct SpaceStatusBar {
 /** \} */
 
 /* -------------------------------------------------------------------- */
+/** \name Toolbar
+ * \{ */
+
+/* bfa - Toolbar Editor */
+typedef struct SpaceToolbar {
+  SpaceLink *next, *prev;
+  ListBase regionbase;
+  char spacetype;
+  char link_flag;
+  char _pad0[6];
+  /* End 'SpaceLink' header. */
+} SpaceToolbar;
+
+/** \} */
+
+/* -------------------------------------------------------------------- */
 /** \name Spreadsheet
  * \{ */
 
@@ -2068,7 +2084,8 @@ typedef enum eSpace_Type {
   SPACE_CLIP = 20,
   SPACE_TOPBAR = 21,
   SPACE_STATUSBAR = 22,
-  SPACE_SPREADSHEET = 23
+  SPACE_TOOLBAR = 23, /*bfa - toolbar*/
+  SPACE_SPREADSHEET = 24,
 
 #define SPACE_TYPE_NUM (SPACE_SPREADSHEET + 1)
 } eSpace_Type;

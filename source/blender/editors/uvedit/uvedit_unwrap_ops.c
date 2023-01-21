@@ -2019,6 +2019,28 @@ static int unwrap_exec(bContext *C, wmOperator *op)
   return OPERATOR_FINISHED;
 }
 
+/*bfa - tool name*/
+static const char *uv_ot_unwrap_get_name(wmOperatorType *ot, PointerRNA *ptr)
+{
+  if (RNA_boolean_get(ptr, "method")) {
+    return CTX_IFACE_(ot->translation_context, "Unwrap Conformal");
+  }
+  return NULL;
+}
+
+/*bfa - descriptions*/
+static char *uv_ot_unwrap_get_description(bContext *UNUSED(C),
+                                          wmOperatorType *UNUSED(ot),
+                                          PointerRNA *ptr)
+{
+  if (RNA_boolean_get(ptr, "method")) {
+    return BLI_strdup(
+        "Unwrap Conformal unwraps the "
+        "mesh with the method Least Square Conformal Mapping (LSCM)");
+  }
+  return NULL;
+}
+
 void UV_OT_unwrap(wmOperatorType *ot)
 {
   static const EnumPropertyItem method_items[] = {
@@ -2028,23 +2050,19 @@ void UV_OT_unwrap(wmOperatorType *ot)
   };
 
   /* identifiers */
-  ot->name = "Unwrap";
-  ot->description = "Unwrap the mesh of the object being edited";
+  ot->name = "Unwrap ABF";
+  ot->description = "ABF unwraps the mesh with the method Angle Based Flattening (ABF)";
   ot->idname = "UV_OT_unwrap";
   ot->flag = OPTYPE_REGISTER | OPTYPE_UNDO;
 
   /* api callbacks */
   ot->exec = unwrap_exec;
+  ot->get_name = uv_ot_unwrap_get_name;               /*bfa - tool name*/
+  ot->get_description = uv_ot_unwrap_get_description; /*bfa - descriptions*/
   ot->poll = ED_operator_uvmap;
 
   /* properties */
-  RNA_def_enum(ot->srna,
-               "method",
-               method_items,
-               0,
-               "Method",
-               "Unwrapping method (Angle Based usually gives better results than Conformal, while "
-               "being somewhat slower)");
+  RNA_def_enum(ot->srna, "method", method_items, 0, "Method", "Unwrapping method");
   RNA_def_boolean(ot->srna,
                   "fill_holes",
                   1,
@@ -2062,14 +2080,11 @@ void UV_OT_unwrap(wmOperatorType *ot)
       0,
       "Use Subdivision Surface",
       "Map UVs taking vertex position after Subdivision Surface modifier has been applied");
-  RNA_def_enum(ot->srna,
-               "margin_method",
-               pack_margin_method_items,
-               ED_UVPACK_MARGIN_SCALED,
-               "Margin Method",
-               "");
+  RNA_def_enum(
+      ot->srna, "margin_method", pack_margin_method_items, ED_UVPACK_MARGIN_SCALED, "Margin Method", "");
+  /* bfa - change the defaults of uv margin */
   RNA_def_float_factor(
-      ot->srna, "margin", 0.001f, 0.0f, 1.0f, "Margin", "Space between islands", 0.0f, 1.0f);
+      ot->srna, "margin", 0.01f, 0.0f, 1.0f, "Margin", "Space between islands", 0.0f, 1.0f);
 }
 
 /** \} */
@@ -3202,7 +3217,7 @@ void ED_uvedit_add_simple_uvs(Main *bmain, const Scene *scene, Object *ob)
       .correct_aspect = false,
       .use_seams = true,
       .margin_method = ED_UVPACK_MARGIN_SCALED,
-      .margin = 0.001f,
+      .margin = 0.01f, /* bfa - change the defaults of uv margin*/
   };
   ED_uvedit_pack_islands_multi(scene, &ob, 1, &bm, NULL, &params);
 
